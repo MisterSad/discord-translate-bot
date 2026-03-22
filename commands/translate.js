@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const translate = require('google-translate-api-x');
+const { deepLTranslate } = require('../deepl');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +11,7 @@ module.exports = {
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('target')
-                .setDescription('The target language code (e.g. en, fr, es, de, etc.)')
+                .setDescription('The target language code (e.g. EN, FR, ES, DE, etc.)')
                 .setRequired(true)),
     async execute(interaction) {
         const text = interaction.options.getString('text');
@@ -20,11 +20,11 @@ module.exports = {
         await interaction.deferReply(); // Gives API time to respond
 
         try {
-            const res = await translate(text, { to: targetLang });
-            await interaction.editReply(`**Original (${res.from.language.iso})**: ${text}\n**Translation (${targetLang})**: ${res.text}`);
+            const res = await deepLTranslate(text, targetLang);
+            await interaction.editReply(`**Original (${res.detectedSourceLang})**: ${text}\n**Translation (${targetLang.toUpperCase()})**: ${res.text}`);
         } catch (error) {
             console.error('Translation error:', error);
-            await interaction.editReply('Sorry, there was an error with the translation service. Check the language code.');
+            await interaction.editReply('Sorry, there was an error with the translation service. Check the language code and your DeepL API key.');
         }
     },
 };

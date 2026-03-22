@@ -53,7 +53,7 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-const translate = require('google-translate-api-x');
+const { deepLTranslate } = require('./deepl');
 const flagMappings = require('./flags-mapping');
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
@@ -79,7 +79,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         if (!messageContent) return; // Ignore empty messages (e.g., just images)
 
         try {
-            const res = await translate(messageContent, { to: targetLang });
+            const res = await deepLTranslate(messageContent, targetLang);
 
             // Send the translation as a reply to the original message
             await reaction.message.reply({
