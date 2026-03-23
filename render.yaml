@@ -1,9 +1,9 @@
-services:
-  - type: worker
+  - type: web
     name: discord-translate-bot
     runtime: node
     region: frankfurt
     plan: free
+    healthCheckPath: /health
     buildCommand: npm install
     startCommand: npm start
     envVars:

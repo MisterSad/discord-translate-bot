@@ -1,4 +1,21 @@
 require('dotenv').config();
+const http = require('http');
+
+// Minimal HTTP server required by Render's free Web Service plan
+const server = http.createServer((req, res) => {
+    if (req.url === '/health') {
+        res.writeHead(200);
+        res.end('OK');
+    } else {
+        res.writeHead(404);
+        res.end();
+    }
+});
+server.listen(process.env.PORT || 3000, () => {
+    console.log(`Health check server listening on port ${process.env.PORT || 3000}`);
+});
+
+
 const { Client, GatewayIntentBits, Collection, Events, Partials } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
