@@ -56,6 +56,9 @@ client.on(Events.InteractionCreate, async interaction => {
 const { deepLTranslate } = require('./deepl');
 const flagMappings = require('./flags-mapping');
 
+// Rate limiting: prevent a user from spamming translations on the same message
+const reactionCooldowns = new Map();
+
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
     // When a reaction is received, check if the structure is partial
     if (reaction.partial) {
@@ -77,6 +80,12 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         const messageContent = reaction.message.content;
 
         if (!messageContent) return; // Ignore empty messages (e.g., just images)
+
+        // Rate limiting: 10-second cooldown per user / message / language
+        const cooldownKey = `${user.id}:${reaction.message.id}:${targetLang}`;
+        if (reactionCooldowns.has(cooldownKey)) return;
+        reactionCooldowns.set(cooldownKey, true);
+        setTimeout(() => reactionCooldowns.delete(cooldownKey), 10_000);
 
         try {
             const res = await deepLTranslate(messageContent, targetLang);

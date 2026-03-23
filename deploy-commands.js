@@ -9,6 +9,10 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 
 for (const file of commandFiles) {
     const command = require(path.join(commandsPath, file));
+    if (!command.data || !command.execute) {
+        console.log(`[WARNING] Skipping ${file}: missing "data" or "execute" property.`);
+        continue;
+    }
     commands.push(command.data.toJSON());
 }
 
